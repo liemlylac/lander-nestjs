@@ -18,4 +18,7 @@ export class RegionListRO {
 
   @ApiProperty({ required: false })
   shipCode: string = null;
+
+  @ApiProperty()
+  active: boolean;
 }

@@ -15,4 +15,7 @@ export class WardListRO {
 
   @ApiProperty({ required: false })
   shipCode: string = null;
+
+  @ApiProperty()
+  active: boolean;
 }

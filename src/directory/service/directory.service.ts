@@ -11,15 +11,15 @@ export class DirectoryService {
     private readonly wardRepo: WardRepository,
   ) {}
 
-  getRegionList(countryCode: string) {
-    return this.regionRepo.loadByCountryCode(countryCode);
+  getRegionList(countryCode: string, active?: boolean) {
+    return this.regionRepo.loadByCountryCode(countryCode, active);
   }
 
-  getDistrictList(regionId: number) {
-    return this.districtRepo.loadByRegionId(regionId);
+  getDistrictList(regionId: number, active?: boolean) {
+    return this.districtRepo.loadByRegionId(regionId, active);
   }
 
-  getWardList(districtId: number) {
-    return this.wardRepo.loadByDistrictId(districtId);
+  getWardList(districtId: number, active?: boolean) {
+    return this.wardRepo.loadByDistrictId(districtId, active);
   }
 }

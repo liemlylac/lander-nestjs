@@ -27,6 +27,15 @@ export class WardEntity extends BaseEntity {
   @Column({ name: 'ship_code', type: 'varchar', length: 10, nullable: true })
   shipCode: string;
 
+  @Column({
+    name: 'active',
+    type: 'tinyint',
+    width: 1,
+    nullable: false,
+    default: 1,
+  })
+  active: boolean;
+
   @ManyToOne(
     () => DistrictEntity,
     district => district.wards,

@@ -1,4 +1,10 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-param.decorator';
 import { DistrictListRO } from '../ro/district-list.ro';
@@ -14,21 +20,27 @@ export class DirectoryController {
   @ApiOkResponse({ type: RegionListRO })
   @ApiImplicitParam({ name: 'country' })
   @Get('/region/:country')
-  getRegion(@Param('country') code) {
-    return this.directoryService.getRegionList(code);
+  getRegion(@Param('country') code, @Query('active') active?: boolean) {
+    return this.directoryService.getRegionList(code, active);
   }
 
   @ApiOkResponse({ type: DistrictListRO })
   @ApiImplicitParam({ name: 'regionId' })
   @Get('/district/:regionId')
-  getDistrict(@Param('regionId', ParseIntPipe) id) {
-    return this.directoryService.getDistrictList(id);
+  getDistrict(
+    @Param('regionId', ParseIntPipe) id,
+    @Query('active') active?: boolean,
+  ) {
+    return this.directoryService.getDistrictList(id, active);
   }
 
   @ApiOkResponse({ type: WardListRO })
   @ApiImplicitParam({ name: 'districtId' })
   @Get('/ward/:districtId')
-  getWard(@Param('districtId', ParseIntPipe) id) {
-    return this.directoryService.getWardList(id);
+  getWard(
+    @Param('districtId', ParseIntPipe) id,
+    @Query('active') active?: boolean,
+  ) {
+    return this.directoryService.getWardList(id, active);
   }
 }
