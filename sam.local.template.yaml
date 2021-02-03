@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Lander Lambda with Nestjs.
+
+Resources:
+  LanderLambdaNestJSFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: dev-lander-nestjs
+      CodeUri: deploy/lander.zip
+      Handler: dist/lambda.handler
+      Runtime: nodejs12.x
+      MemorySize: 1024
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 29
+      Environment:
+        Variables:
+          # base
+          NODE_ENV: production
+          FRONTEND_URL: http://dev-lander.liemlylac.com
+          LOGGING_INTERNAL_SERVER_ERROR: true
+          # swagger
+          ENABLE_SWAGGER: true
+          API_ROOT: api
+          # auth
+          AUTH_PWD_PEPPER: landerSuperSecretPepper
+          AUTH_PWD_RESET_TOKEN_LIFE_TIME: 1800000
+          JWT_ACCESS_TOKEN_SECRET: landerAccessTokenSecret
+          JWT_REFRESH_TOKEN_SECRET: landerRefreshTokenSecret
+          # mail
+          MAIL_PREVIEW: false
+          MAIL_HOST: smtp.ethereal.email
+          MAIL_PORT: 587
+          MAIL_AUTH_USER: adriana.trantow@ethereal.email
+          MAIL_AUTH_PASS: PXSqy3kZvSxWCbfEmd
+          # database
+          DATABASE_HOST: dev-lander-nestjs.cnams4yfa3bn.ap-southeast-1.rds.amazonaws.com
+          DATABASE_PORT: 3306
+          DATABASE_USER: lander
+          DATABASE_PASSWORD: landerSecret
+          DATABASE_DATABASE: lander_nestjs
+          DATABASE_LOGGING: false
+
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-26797254
+        SubnetIds:
+          - subnet-38d8115e
+          - subnet-fcb940b4

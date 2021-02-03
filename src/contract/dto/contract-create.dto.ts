@@ -1,1 +1,1 @@
-export class ContractCreateDTO {}
+export class ContractCreateDto {}

@@ -8,12 +8,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { RegisterDTO } from '../../auth/dto/register.dto';
-import { AuthService } from '../../auth/service/auth.service';
-import { EditUserDTO } from '../dto/edit-user.dto';
-import { UserEntity } from '../entity/user.entity';
-import { UserRepository } from '../repository/user.repository';
-import { UserProfileRO } from '../ro/user-profile.ro';
+import { RegisterDto, AuthService } from '../../auth';
+import { EditUserDto } from '../dto/';
+import { User } from '../entities';
+import { UserRepository } from '../resources';
+import { UserProfileRO } from '../ro';
 
 @Injectable()
 export class UserService {
@@ -25,7 +24,7 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
-  async getById(id: string): Promise<UserEntity> {
+  async getById(id: string): Promise<User> {
     const user = await this.userRepo.getById(id);
     if (!user) {
       throw new NotFoundException('User does not exist');
@@ -33,7 +32,7 @@ export class UserService {
     return user;
   }
 
-  async profile(user: UserEntity) {
+  async mapProfile(user: User) {
     return plainToClass(UserProfileRO, user, {
       excludeExtraneousValues: true,
       groups: ['profile'],
@@ -41,14 +40,14 @@ export class UserService {
   }
 
   async view(id: string): Promise<UserProfileRO> {
-    const user: UserEntity = await this.getById(id);
+    const user: User = await this.getById(id);
     return plainToClass(UserProfileRO, user, {
       excludeExtraneousValues: true,
       groups: ['view'],
     });
   }
 
-  async getByEmail(email: string): Promise<UserEntity> {
+  async getByEmail(email: string): Promise<User> {
     return await this.userRepo.getByEmail(email);
   }
 
@@ -62,10 +61,10 @@ export class UserService {
     }
   }
 
-  async create(data: RegisterDTO): Promise<UserEntity> {
+  async create(data: RegisterDto): Promise<User> {
     await this.validateEmailTaken(data.email);
     const user = this.userRepo.create({ ...data, country: 'VN' });
-    user.password = await this.authService.generatePassword(data.password);
+    user.password = await this.authService.hashPassword(data.password);
     try {
       return await this.userRepo.save(user, { reload: true });
     } catch (e) {
@@ -74,7 +73,7 @@ export class UserService {
     }
   }
 
-  async edit(id: string, user: EditUserDTO) {
+  async edit(id: string, user: EditUserDto) {
     try {
       await this.userRepo.update(id, user);
     } catch (e) {
@@ -83,11 +82,11 @@ export class UserService {
     }
   }
 
-  async resetPassword(id: string, password: string) {
-    const account = await this.getById(id);
-    account.password = await this.authService.generatePassword(password);
+  async resetPassword(email: string, password: string) {
+    const account = await this.getByEmail(email);
+    account.password = await this.authService.hashPassword(password);
     try {
-      await this.userRepo.update(id, account);
+      await this.userRepo.update(account.id, account);
       return account;
     } catch (e) {
       this.logger.error(e);

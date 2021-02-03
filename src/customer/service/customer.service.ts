@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { AuthService } from '../../auth/service/auth.service';
-import { CustomerRepository } from '../repository/customer.repository';
+import { AuthService } from '../../auth';
+import { CustomerRepository } from '../resources/customer.repository';
 
 @Injectable()
 export class CustomerService {

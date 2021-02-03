@@ -1,11 +1,10 @@
 import * as Joi from '@hapi/joi';
 import { DynamicModule, Module } from '@nestjs/common';
-import {
-  ConfigModule as NestConfigModule,
-  ConfigService,
-} from '@nestjs/config';
+import { ConfigModule as NestConfigModule } from '@nestjs/config';
+import { ConfigFactory } from '@nestjs/config/dist/interfaces';
 import { config } from './config';
 import { configSchema } from './config.schema';
+import { ConfigService } from './config.service';
 
 @Module({})
 export class ConfigModule {
@@ -16,13 +15,14 @@ export class ConfigModule {
         NestConfigModule.forRoot({
           isGlobal: true,
           load: [config],
-          validationSchema: Joi.object({
-            ...configSchema,
-          }),
+          validationSchema: Joi.object({ ...configSchema }),
         }),
       ],
       providers: [ConfigService],
       exports: [ConfigService],
     };
+  }
+  static forFeature(config: ConfigFactory): DynamicModule {
+    return NestConfigModule.forFeature(config);
   }
 }

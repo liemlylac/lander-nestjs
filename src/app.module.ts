@@ -1,7 +1,4 @@
 import { ConfigModule } from '@config/config.module';
-import { CoreModule } from '@core/core.module';
-import { LoggerMiddleware } from '@core/middleware/logger.middleware';
-import { MailConfigService } from '@core/services/mail-config.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import {
   Logger,
@@ -10,24 +7,30 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
+import { LoggerMiddleware } from '@app/common';
+import { MailConfigService } from '@app/mail';
+
 import { providers } from './app.providers';
 import { AuthModule } from './auth/auth.module';
+import { CommonModule } from './common/common.module';
 import { ContractModule } from './contract/contract.module';
 import { CustomerModule } from './customer/customer.module';
 import { MysqlModule } from './database/mysql.module';
 import { DirectoryModule } from './directory/directory.module';
 import { GroupModule } from './group/group.module';
 import { HouseModule } from './house/house.module';
+import { MailModule } from './mail/mail.module';
 import { PaymentModule } from './payment/payment.module';
 import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
-    AuthModule,
+    CommonModule,
     ConfigModule.forRoot(),
+    AuthModule,
     ContractModule,
-    CoreModule,
     CustomerModule,
+    MailModule.forRoot(),
     MailerModule.forRootAsync({ useClass: MailConfigService }),
     MysqlModule.forRoot(),
     DirectoryModule,

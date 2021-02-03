@@ -1,8 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '../config/config.module';
-import { InitialDatabase010 } from '../migration/initial-database.0.1.0';
+import { databaseConfig, DatabaseConfig } from './database.config';
 
 @Module({})
 export class MysqlModule {
@@ -12,20 +11,20 @@ export class MysqlModule {
       module: MysqlModule,
       imports: [
         TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
-          inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          imports: [ConfigModule.forFeature(databaseConfig)],
+          inject: [databaseConfig.KEY],
+          useFactory: (dbConfig: DatabaseConfig) => ({
             type: 'mysql', // Current only support connect one db type is mysql
-            host: configService.get<string>('db.host'),
-            port: configService.get<number>('db.port'),
-            username: configService.get<string>('db.username'),
-            password: configService.get<string>('db.password'),
-            database: configService.get<string>('db.database'),
+            host: dbConfig.host,
+            port: dbConfig.port,
+            username: dbConfig.username,
+            password: dbConfig.password,
+            database: dbConfig.database,
             entities: ['dist/**/*.entity{.ts,.js}'],
             synchronize: true,
-            logging: configService.get<boolean>('db.logging'),
+            logging: dbConfig.logging,
             migrationsTableName: 'migration',
-            migrations: [InitialDatabase010],
+            migrations: [],
             cli: {
               entitiesDir: '/**/*.entity{.ts, .js}',
               migrationsDir: '/migration',

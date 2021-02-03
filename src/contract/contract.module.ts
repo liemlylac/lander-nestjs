@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ContractController } from './controller/contract.controller';
-import { ContractRepository } from './repository/contract.repository';
-import { ContractService } from './service/contract.service';
+import { ContractController } from './contract.controller';
+import { ContractRepository } from './resources';
+import { ContractService } from './services/';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ContractRepository])],

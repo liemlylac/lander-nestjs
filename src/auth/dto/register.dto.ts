@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MinLength } from 'class-validator';
-import { LoginDTO } from './login.dto';
+import { LoginDto } from './login.dto';
 
-export class RegisterDTO extends LoginDTO {
+export class RegisterDto extends LoginDto {
   @ApiProperty({
     example: 'John',
   })

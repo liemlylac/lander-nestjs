@@ -19,10 +19,8 @@ export const configSchema = {
   // Auth
   AUTH_PWD_PEPPER: Joi.string().default('landerSuperSecretPepper'),
   AUTH_PWD_RESET_TOKEN_LIFE_TIME: Joi.number().default(1800000),
-  JWT_ACCESS_SECRET_KEY: Joi.string().default('landerJwtSecretKey'),
-  JWT_REFRESH_SECRET_KEY: Joi.string().default('landerRefreshJwtSecretKey'),
-  JWT_ACCESS_KEY_LIFE_TIME: Joi.number().default(28800000),
-  JWT_REFRESH_SECRET_KEY_LIFE_TIME: Joi.number().default(2592000),
+  JWT_ACCESS_TOKEN_SECRET: Joi.string().default('landerJwtSecretKey'),
+  JWT_REFRESH_TOKEN_SECRET: Joi.string().default('landerRefreshJwtSecretKey'),
   // Mail
   MAIL_PREVIEW: Joi.boolean().default(true),
   MAIL_HOST: Joi.string().default('smtp.example.com'),

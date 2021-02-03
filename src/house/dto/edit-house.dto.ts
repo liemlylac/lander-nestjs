@@ -1,3 +1,3 @@
-import { CreateHouseDTO } from './create-house.dto';
+import { CreateHouseDto } from './create-house.dto';
 
-export class EditHouseDTO extends CreateHouseDTO {}
+export class EditHouseDto extends CreateHouseDto {}

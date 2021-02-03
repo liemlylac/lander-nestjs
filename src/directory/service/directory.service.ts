@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DistrictRepository } from '../repository/district.repository';
-import { RegionRepository } from '../repository/region.repository';
-import { WardRepository } from '../repository/ward.repository';
+import { DistrictRepository } from '../resources/district.repository';
+import { RegionRepository } from '../resources/region.repository';
+import { WardRepository } from '../resources/ward.repository';
 
 @Injectable()
 export class DirectoryService {

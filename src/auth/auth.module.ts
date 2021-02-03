@@ -1,29 +1,32 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { ConfigModule } from '@config/config.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as DeviceDetector from 'device-detector-js';
 import { UserModule } from '../user/user.module';
-import { AuthController } from './controller/auth.controller';
-import { JwtConfig } from './passport/jwt.config';
-import { JwtStrategy } from './passport/jwt.strategy';
-import { LocalStrategy } from './passport/local.strategy';
-import { ActionRepository } from './repository/action.repository';
-import { PermissionRepository } from './repository/permission.repository';
-import { ResourceRepository } from './repository/resource.repository';
-import { RoleRepository } from './repository/role.repository';
-import { AuthService } from './service/auth.service';
-import { CryptoService } from './service/crypto.service';
-import { HashService } from './service/hash.service';
-import { RoleService } from './service/role.service';
+import { AuthController } from './auth.controller';
+import { JwtConfig, JwtStrategy, LocalStrategy } from './passports';
+import { authConfig } from './auth.config';
+import {
+  ActionRepository,
+  PermissionRepository,
+  ResourceRepository,
+  RoleRepository,
+  SessionRepository,
+} from './resources/';
+import { AuthService, RoleService, SessionService } from './services';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      RoleRepository,
-      ResourceRepository,
       ActionRepository,
       PermissionRepository,
+      ResourceRepository,
+      RoleRepository,
+      SessionRepository,
     ]),
+    ConfigModule.forFeature(authConfig),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({ useClass: JwtConfig }),
     forwardRef(() => UserModule),
@@ -31,12 +34,12 @@ import { RoleService } from './service/role.service';
   controllers: [AuthController],
   providers: [
     AuthService,
-    HashService,
-    CryptoService,
     LocalStrategy,
     JwtStrategy,
     RoleService,
+    SessionService,
+    DeviceDetector,
   ],
-  exports: [AuthService],
+  exports: [AuthService, SessionService],
 })
 export class AuthModule {}
