@@ -7,14 +7,14 @@ export class SessionRepository extends Repository<Session> {
     return this.find({ userId });
   }
 
-  getByUserIdAndClientId(userId: string, clientId: string): Promise<Session> {
-    return this.findOne({ userId, deviceId: clientId });
+  getByUserIdAndDeviceId(userId: string, deviceId: string): Promise<Session> {
+    return this.findOne({ userId, deviceId: deviceId });
   }
 
-  deleteByUserIdAndClientId(
+  deleteByUserIdAndDeviceId(
     userId: string,
-    clientId: string,
+    deviceId: string,
   ): Promise<DeleteResult> {
-    return this.delete({ userId, deviceId: clientId });
+    return this.delete({ userId, deviceId: deviceId });
   }
 }

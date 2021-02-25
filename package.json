@@ -2,7 +2,14 @@
   "name": "lander-nestjs",
   "version": "0.0.1",
   "description": "Lander project using Nest Js",
-  "author": "liemlylac",
+  "author": {
+    "name": "Liem Vo",
+    "email": "liemlylac@gmail.com"
+  },
+  "homepage": "http://lander-nestjs.liemlylac.com/api",
+  "repository": {
+    "url": "https://github.com/liemlylac/lander-nestjs"
+  },
   "private": true,
   "license": "MIT",
   "scripts": {

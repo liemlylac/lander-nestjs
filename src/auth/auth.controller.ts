@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Query,
   Request,
@@ -12,14 +13,15 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
+  ApiParam,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { defaultValidationPipeOption } from '@app/common';
-import * as DeviceDetector from 'device-detector-js';
-
 import {
   EmailDto,
   LoginDto,
@@ -27,7 +29,6 @@ import {
   RequestPasswordDto,
   ResetPasswordDto,
   RefreshTokenDto,
-  LogoutDto,
   LoginResultDto,
 } from './dto';
 import { AuthService } from './services';
@@ -36,22 +37,7 @@ import { AuthService } from './services';
 @UsePipes(new ValidationPipe(defaultValidationPipeOption))
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly detector: DeviceDetector,
-  ) {}
-
-  @Get()
-  request(@Request() req) {
-    const ip =
-      req.headers['x-forwarded-for'] ||
-      req.connection.remoteAddress ||
-      req.socket.remoteAddress ||
-      (req.connection.socket ? req.connection.socket.remoteAddress : null);
-    const info: any = this.detector.parse(req.headers['user-agent']);
-    info.ip = ip;
-    return info;
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @ApiCreatedResponse({ type: LoginResultDto })
   @UseGuards(AuthGuard('local'))
@@ -92,9 +78,15 @@ export class AuthController {
     return await this.authService.refreshToken(body);
   }
 
-  @ApiOkResponse()
-  @Delete('logout')
-  async logout(@Body() body: LogoutDto) {
-    return this.authService.logout(body);
+  @ApiNoContentResponse({ description: 'Logout success without body response' })
+  @ApiBearerAuth()
+  @ApiParam({ name: 'deviceId' })
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('logout/:deviceId')
+  async logout(
+    @Request() req,
+    @Param('deviceId') deviceId: string,
+  ): Promise<void> {
+    return this.authService.logout(req.user.id, deviceId);
   }
 }

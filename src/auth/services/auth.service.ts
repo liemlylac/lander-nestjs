@@ -12,9 +12,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { User, UserService } from '../../user';
 import { authConfig, AuthConfig } from '../auth.config';
-import { getSignatureFromJWT } from '../auth.helper';
+import { getSignatureFromJwt } from '../auth.helper';
 import {
-  DeviceDto,
   LoginResultDto,
   LogoutDto,
   RefreshTokenDto,
@@ -28,6 +27,7 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
+    // eslint-disable-next-line
     @Inject(authConfig.KEY)
     private readonly authConfig: AuthConfig,
     private readonly jwtService: JwtService,
@@ -77,16 +77,11 @@ export class AuthService {
     };
   }
 
-  async createSession(clientDto: DeviceDto): Promise<{ clientId: string }> {
-    const session = await this.sessionService.saveSession(clientDto);
-    return { clientId: session.deviceId };
-  }
-
   async login(user: User): Promise<LoginResultDto> {
     const tokenPack = this.generateTokens(user);
     const sessionData = {
       userId: user.id,
-      signature: getSignatureFromJWT(tokenPack.refreshToken),
+      signature: getSignatureFromJwt(tokenPack.refreshToken),
     };
     const session = await this.sessionService.saveSession(sessionData);
     return {
@@ -94,7 +89,7 @@ export class AuthService {
       lastName: user.lastName,
       email: user.email,
       avatar: user.avatar,
-      token: { clientId: session.deviceId, ...tokenPack },
+      token: { deviceId: session.deviceId, ...tokenPack },
     };
   }
 
@@ -228,25 +223,29 @@ export class AuthService {
   async refreshToken(tokens: RefreshTokenDto) {
     const payload = this.verifyRefreshToken(tokens.refreshToken);
     const user = await this.userService.getById(payload.id);
-    const tokenPack = this.generateTokens(user);
-    const signature = getSignatureFromJWT(tokenPack.refreshToken);
+    const signature = getSignatureFromJwt(tokens.refreshToken);
     const session = await this.sessionService.getSession(
       user.id,
-      tokens.clientId,
+      tokens.deviceId,
     );
+
     if (!session || signature !== session.signature) {
       throw new UnauthorizedException();
     }
-    session.signature = signature;
+
+    const newTokens = this.generateTokens(user);
+    session.signature = getSignatureFromJwt(newTokens.refreshToken);
     await this.sessionService.saveSession(session);
-    return { clientId: session.deviceId, ...tokenPack };
+
+    return { deviceId: session.deviceId, ...newTokens };
   }
 
-  async logout(logoutDto: LogoutDto): Promise<void> {
-    await this.sessionService.removeSession(
-      logoutDto.userId,
-      logoutDto.clientId,
-    );
-    return;
+  async logout(userId, deviceId): Promise<void> {
+    try {
+      await this.sessionService.removeSession(userId, deviceId);
+    } catch (e) {
+      this.logger.error(e.message);
+      throw new InternalServerErrorException();
+    }
   }
 }

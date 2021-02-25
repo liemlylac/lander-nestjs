@@ -1,4 +1,4 @@
-export function getSignatureFromJWT(jwt: string) {
+export function getSignatureFromJwt(jwt: string) {
   if (typeof jwt !== 'string') {
     throw new Error('JWT must be a string');
   }

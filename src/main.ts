@@ -21,16 +21,20 @@ async function bootstrap() {
   /**
    * Swagger Api code block
    */
-  if (config.get('enableSwagger')) {
+  if (config.get('ENABLE_SWAGGER')) {
     const options = new DocumentBuilder()
-      .setTitle('Lander Software')
-      .setDescription('Software manager boarding house')
-      .setVersion('0.1.0')
-      .setContact('Liem Vo', null, 'liemlylac@gmail.com')
+      .setTitle(config.get('npm_package_name'))
+      .setDescription(config.get('npm_package_description'))
+      .setVersion(config.get('npm_package_version'))
+      .setContact(
+        config.get('npm_package_author_name'),
+        config.get('npm_package_author_url'),
+        config.get('npm_package_author_email'),
+      )
       .addBearerAuth()
       .build();
     const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(config.get('apiRoot'), app, document);
+    SwaggerModule.setup(config.get('API_ROOT'), app, document);
   }
 
   await app.listen(config.get('port'));

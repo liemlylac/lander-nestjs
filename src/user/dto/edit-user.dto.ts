@@ -2,22 +2,15 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
 
 export class EditUserDto {
-  @ApiPropertyOptional({
-    example: 'John',
-  })
+  @ApiPropertyOptional({ example: 'John' })
   @IsString()
   firstName: string;
 
-  @ApiPropertyOptional({
-    example: 'Doe',
-  })
+  @ApiPropertyOptional({ example: 'Doe' })
   @IsString()
   lastName: string;
 
-  @ApiPropertyOptional({
-    type: String,
-    example: '5553056909',
-  })
+  @ApiPropertyOptional({ example: '5553056909' })
   @IsOptional()
   @IsString()
   @Length(1, 12)

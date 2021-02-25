@@ -12,8 +12,8 @@ export class SessionService {
     return this.sessionResource.getByUserId(userId);
   }
 
-  async getSession(userId, clientId): Promise<Session> {
-    return await this.sessionResource.getByUserIdAndClientId(userId, clientId);
+  async getSession(userId, deviceId): Promise<Session> {
+    return await this.sessionResource.getByUserIdAndDeviceId(userId, deviceId);
   }
 
   async saveSession(data: Partial<Session>): Promise<Session> {
@@ -25,9 +25,9 @@ export class SessionService {
     }
   }
 
-  async removeSession(userId, clientId): Promise<void> {
+  async removeSession(userId, deviceId): Promise<void> {
     try {
-      await this.sessionResource.deleteByUserIdAndClientId(userId, clientId);
+      await this.sessionResource.deleteByUserIdAndDeviceId(userId, deviceId);
     } catch (e) {
       this.logger.error(e);
     }
